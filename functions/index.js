@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const firebase = require("./admin/firebase");
+const multer = require("./helpers/multer");
 
 const middleware = {
 	authentication: require("./middlewares/authorization")
@@ -10,11 +12,11 @@ const middleware = {
 
 const app = express();
 app.use(cors({ origin: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(middleware.authentication);
 
-app.get("/message", (req, res) => res.json({ message: "Eclésio Melo Júnior" }));
+app.get("/hello", (req, res) => res.json({ user: req.user }));
 
 exports.server = functions.https.onRequest(app);

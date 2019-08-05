@@ -1,9 +1,13 @@
-const admin = require("firebase-admin");
-var serviceAccount = require("../.credentials/car-rent-store-firebase-admin.json");
+const admin = require("../admin");
 
-admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount),
-	databaseURL: "https://car-rent-store.firebaseio.com"
-});
+async function uploadImageAndGetPath(imagePath, { bucket, metadata }) {
+	const storageBucket = admin.storage().bucket(bucket);
+	await storageBucket.upload(imagePath, {
+		destination: imagePath,
+		metadata: metadata
+	});
+}
 
-module.exports = admin;
+module.exports = {
+	uploadImageAndGetPath
+};

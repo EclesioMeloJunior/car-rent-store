@@ -1,18 +1,15 @@
-const firebaseAdmin = require("../admin/firebase");
+const firebaseAdmin = require("../admin");
 
 async function authorization(req, res, next) {
-	const isAuthorized =
-		(!req.headers.authorization ||
-			!req.headers.authorization.startsWith("Bearer ")) &&
-		!(req.cookies && req.cookies.__session);
+	const isNotAuthorized =
+		!req.headers.authorization ||
+		!req.headers.authorization.startsWith("Bearer ");
 
-	if (!isAuthorized) {
+	if (isNotAuthorized) {
 		return unauthorized(res);
 	}
 
-	const token =
-		req.headers.authorization.split("Bearer ")[1] || req.cookies.__session;
-
+	const token = req.headers.authorization.split("Bearer ")[1];
 	const user = await decodeAuthorizeToken(token);
 
 	if (!user) {
