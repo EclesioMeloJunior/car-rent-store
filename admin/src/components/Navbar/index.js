@@ -2,12 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { default as BootstrapNavbar } from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-<<<<<<< HEAD
-=======
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { connect } from "react-redux";
 import firebase from "@firebase-app";
->>>>>>> 0fb9756383097b8573e05422db4289090013261d
 
 const AuthNavbar = props => (
 	<BootstrapNavbar bg="dark" variant="dark">
@@ -23,8 +20,6 @@ const AuthNavbar = props => (
 				Configurações
 			</Link>
 		</Nav>
-<<<<<<< HEAD
-=======
 		<NavDropdown
 			title={props.user.displayName}
 			id="basic-nav-dropdown"
@@ -35,7 +30,6 @@ const AuthNavbar = props => (
 				Sair
 			</NavDropdown.Item>
 		</NavDropdown>
->>>>>>> 0fb9756383097b8573e05422db4289090013261d
 	</BootstrapNavbar>
 );
 
