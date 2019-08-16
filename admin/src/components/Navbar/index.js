@@ -1,22 +1,54 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { default as BootstrapNavbar } from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { connect } from "react-redux";
+import firebase from "@firebase-app";
 
-const Navbar = () => (
+const AuthNavbar = props => (
 	<BootstrapNavbar bg="dark" variant="dark">
-		<BootstrapNavbar.Brand href="#home">BootstrapNavbar</BootstrapNavbar.Brand>
+		<BootstrapNavbar.Brand href="#home">Car Rent Store</BootstrapNavbar.Brand>
 		<Nav className="mr-auto">
-			<Nav.Link href="#home">Home</Nav.Link>
-			<Nav.Link href="#features">Features</Nav.Link>
-			<Nav.Link href="#pricing">Pricing</Nav.Link>
+			<Link className="nav-link" to="/carros">
+				Meus Carros
+			</Link>
+			<Link className="nav-link" to="/cidades">
+				Cidades
+			</Link>
+			<Link className="nav-link" to="/configuracoes">
+				Configurações
+			</Link>
 		</Nav>
-		<Form inline>
-			<Form.Control type="text" placeholder="Search" className="mr-sm-2" />
-			<Button variant="outline-info">Search</Button>
-		</Form>
+		<NavDropdown
+			title={props.user.displayName}
+			id="basic-nav-dropdown"
+			alignRight
+			className="nav-link"
+		>
+			<NavDropdown.Item onClick={() => firebase.auth().signOut()}>
+				Sair
+			</NavDropdown.Item>
+		</NavDropdown>
 	</BootstrapNavbar>
 );
 
-export default Navbar;
+const NotAuthNavbar = props => (
+	<BootstrapNavbar bg="dark" variant="dark">
+		<BootstrapNavbar.Brand href="#home">Car Rent Store</BootstrapNavbar.Brand>
+	</BootstrapNavbar>
+);
+
+const Navbar = props => {
+	return props.auth.user ? (
+		<AuthNavbar user={props.auth.user} />
+	) : (
+		<NotAuthNavbar />
+	);
+};
+
+const mapStateToProps = state => ({
+	auth: state.auth
+});
+
+export default connect(mapStateToProps)(Navbar);
