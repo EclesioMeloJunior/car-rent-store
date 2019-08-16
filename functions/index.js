@@ -3,10 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const firebase = require("./admin/firebase");
-const multer = require("./helpers/multer");
 
-const middleware = {
+const middlewares = {
 	authentication: require("./middlewares/authorization")
 };
 
@@ -15,7 +13,7 @@ app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(middleware.authentication);
+app.use(middlewares.authentication);
 
 app.get("/hello", (req, res) => res.json({ user: req.user }));
 
