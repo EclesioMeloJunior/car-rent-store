@@ -1,6 +1,12 @@
 import React from "react";
-import withMainContainer from "../../container/withMainContainer";
+import { compose } from "redux";
+import withMainContainer from "@containers/withMainContainer";
+import withAuthentication from "@containers/withAuthentication";
+import withFirebase from "@firebase-app/withFirebase";
 
 const Home = props => <h1>Hello from home!</h1>;
 
-export default withMainContainer(Home);
+export default compose(
+	withAuthentication,
+	withMainContainer
+)(Home);
