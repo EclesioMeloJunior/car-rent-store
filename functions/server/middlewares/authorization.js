@@ -1,4 +1,4 @@
-const firebaseAdmin = require("../admin");
+const firebaseAdmin = require("../../admin");
 
 async function authorization(req, res, next) {
 	const isNotAuthorized =
