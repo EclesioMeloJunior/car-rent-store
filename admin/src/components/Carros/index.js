@@ -2,6 +2,7 @@ import React from "react";
 import { compose } from "redux";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Link } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -14,7 +15,9 @@ const Carros = props => {
 			<Row>
 				<Col>
 					<Card body>
-						<Button variant="success">Novo Carro</Button>
+						<Button as={Link} to="/carros/form" variant="success">
+							Novo Carro
+						</Button>
 					</Card>
 				</Col>
 			</Row>

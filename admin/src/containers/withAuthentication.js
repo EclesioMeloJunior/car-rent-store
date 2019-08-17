@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import Authentication from "../components/Authentication";
+
 import firebase from "@firebase-app";
 import { authTypes } from "@redux/auth";
 
