@@ -33,7 +33,7 @@ const kmAtualFieldMask = createNumberMask({
 });
 
 const CarroForm = props => {
-	const { handleSubmit, submitting } = props;
+	const { handleSubmit } = props;
 
 	const [fabricantes, setFabricantes] = useState(["Aguarde..."]);
 
@@ -41,11 +41,10 @@ const CarroForm = props => {
 		setFabricantes(getAllManufactures());
 	}, []);
 
-	console.log(submitting);
-
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Form.Row>
+				<Field name="id" type="hidden" component="input" />
 				<Form.Group as={Col} controlId="formGridPassword">
 					<Form.Label>Fabricante</Form.Label>
 					<Field
@@ -115,6 +114,20 @@ const CarroForm = props => {
 						name="km_atual"
 						{...kmAtualFieldMask}
 						placeholder="Infomrme o KM atual"
+					/>
+				</Form.Group>
+			</Form.Row>
+
+			<Form.Row>
+				<Form.Group as={Col} controlId="formGridState">
+					<Form.Label>Observação</Form.Label>
+					<Field
+						component={ReduxFormControl}
+						type="text"
+						as="textarea"
+						rows="3"
+						name="observacao"
+						placeholder="Descreva sobre seu carro..."
 					/>
 				</Form.Group>
 			</Form.Row>

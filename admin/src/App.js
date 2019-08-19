@@ -1,10 +1,11 @@
 import React from "react";
-import { Provider } from "react-redux";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Home from "./components/Home";
 import store from "@redux/store";
+import Home from "./components/Home";
+import { Provider } from "react-redux";
 import Carros from "./components/Carros";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import CarroFormContainer from "./components/Carros/CarroFormContainer";
+import CarroImagesFormContainer from "./components/Carros/CarroImagesFormContainer";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,7 +17,16 @@ function App() {
 				<Switch>
 					<Route path="/" exact component={Home} />
 					<Route path="/carros" exact component={Carros} />
-					<Route path="/carros/form" exact component={CarroFormContainer} />
+					<Route
+						path="/carros/form/:carId?"
+						exact
+						component={CarroFormContainer}
+					/>
+					<Route
+						path="/carros/images/form/:carId"
+						exact
+						component={CarroImagesFormContainer}
+					/>
 				</Switch>
 			</BrowserRouter>
 
