@@ -1,16 +1,34 @@
 import React from "react";
 import { compose } from "redux";
-import withMainContainer from "../../containers/withMainContainer";
-import withAuthentication from "../../containers/withAuthentication";
+import withMainContainer from "@containers/withMainContainer";
+import withAuthentication from "@containers/withAuthentication";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import CarroForm from "./CarroForm";
+import withFirebase from "@firebase-app/withFirebase";
+import { toast } from "react-toastify";
 
-const CarroFormContainer = () => {
+const CarroFormContainer = props => {
+	const firebase = props.firebase.firestore();
+
 	const handleSubmit = values => {
-		console.log(values);
+		firebase
+			.collection("cars")
+			.add(values)
+			.then(carReference => {
+				toast("Sucesso ao salvar o carro!", {
+					type: "success",
+					hideProgressBar: true
+				});
+			})
+			.catch(error => {
+				toast("Problemas ao salvar o carro, verifique os campos", {
+					type: "error",
+					hideProgressBar: true
+				});
+			});
 	};
 
 	return (
@@ -31,5 +49,6 @@ const CarroFormContainer = () => {
 
 export default compose(
 	withMainContainer,
-	withAuthentication
+	withAuthentication,
+	withFirebase
 )(CarroFormContainer);

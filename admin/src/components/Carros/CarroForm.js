@@ -41,6 +41,8 @@ const CarroForm = props => {
 		setFabricantes(getAllManufactures());
 	}, []);
 
+	console.log(submitting);
+
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Form.Row>
@@ -117,7 +119,7 @@ const CarroForm = props => {
 				</Form.Group>
 			</Form.Row>
 
-			<Button variant="primary" type="submit" disabled={submitting}>
+			<Button variant="primary" type="submit">
 				Salvar
 			</Button>
 		</Form>

@@ -6,6 +6,9 @@ import store from "@redux/store";
 import Carros from "./components/Carros";
 import CarroFormContainer from "./components/Carros/CarroFormContainer";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
 	return (
 		<Provider store={store}>
@@ -16,6 +19,8 @@ function App() {
 					<Route path="/carros/form" exact component={CarroFormContainer} />
 				</Switch>
 			</BrowserRouter>
+
+			<ToastContainer />
 		</Provider>
 	);
 }
