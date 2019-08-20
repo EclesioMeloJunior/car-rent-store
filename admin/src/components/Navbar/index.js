@@ -8,7 +8,9 @@ import firebase from "@firebase-app";
 
 const AuthNavbar = props => (
 	<BootstrapNavbar bg="dark" variant="dark">
-		<BootstrapNavbar.Brand href="#home">Car Rent Store</BootstrapNavbar.Brand>
+		<BootstrapNavbar.Brand as={Link} to="/">
+			Car Rent Store
+		</BootstrapNavbar.Brand>
 		<Nav className="mr-auto">
 			<Link className="nav-link" to="/carros">
 				Meus Carros

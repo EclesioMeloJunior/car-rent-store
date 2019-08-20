@@ -6,4 +6,4 @@ function fromSnapshotToArray(querySnapshot) {
 	return normalArray;
 }
 
-export { fromSnapshotToArray };
+module.exports = { fromSnapshotToArray };

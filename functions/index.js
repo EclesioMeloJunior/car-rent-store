@@ -1,20 +1,44 @@
 const functions = require("firebase-functions");
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
+const admin = require("./admin");
+const { fromSnapshotToArray } = require("./admin/formater");
 
-const middlewares = {
-	authentication: require("./middlewares/authorization")
-};
+exports.fetchAllCarsByOwner = functions.https.onCall((data, context) => {
+	const owner_id = context.auth.uid;
 
-const app = express();
-app.use(cors({ origin: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(middlewares.authentication);
+	const carsReference = admin.firestore().collection("cars");
+	const carsQuery = carsReference.where("car_owner", "==", owner_id).get();
 
-app.get("/hello", (req, res) => res.json({ user: req.user }));
+	return carsQuery.then(fromSnapshotToArray);
+});
 
-exports.server = functions.https.onRequest(app);
+exports.fetchCarById = functions.https.onCall((data, context) => {
+	const car_id = data.car_id;
+	const owner_id = context.auth.uid;
+
+	const carReference = admin
+		.firestore()
+		.collection("cars")
+		.doc(car_id);
+
+	const carDocument = carReference.get();
+
+	return carDocument.then(document => {
+		if (!document.exists) {
+			throw new functions.https.HttpsError(
+				"not-found",
+				"Carro não pode ser encontrado!"
+			);
+		}
+
+		const car = document.data();
+
+		if (car.car_owner !== owner_id) {
+			throw new functions.https.HttpsError(
+				"permission-denied",
+				"Acesso negado para este recurso!"
+			);
+		}
+
+		return { id: document.id, ...car };
+	});
+});
