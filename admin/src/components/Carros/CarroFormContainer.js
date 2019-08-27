@@ -45,7 +45,7 @@ const CarroFormContainer = props => {
 		}
 
 		carsReference
-			.then(carReference => history.push("/carros"))
+			.then(() => history.push("/carros"))
 			.catch(() => {
 				toast("Problemas ao salvar o carro, verifique os campos", {
 					type: "error",
