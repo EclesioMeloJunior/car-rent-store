@@ -20,7 +20,9 @@ const Carro = props => {
 	return (
 		<Col xs={12} lg={3} md={3}>
 			<Card>
-				{carro.image && <Card.Img variant="top" src={carro.image} />}
+				{carro.images.length > 0 && (
+					<Card.Img height="150" variant="top" src={carro.images[0].src} />
+				)}
 				<Card.Body>
 					<Card.Title>{carro.modelo}</Card.Title>
 					<Card.Text>{carro.observacao}</Card.Text>

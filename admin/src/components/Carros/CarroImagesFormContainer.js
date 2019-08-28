@@ -38,6 +38,7 @@ const CarroImagesFormContainer = props => {
 			carById({ car_id: match.params.carId })
 				.then(carro => {
 					setCarro(carro.data);
+					setImages(carro.data.images || []);
 					console.log(carro.data);
 				})
 				.catch(err => {
@@ -65,56 +66,74 @@ const CarroImagesFormContainer = props => {
 		}
 	};
 
-	const handleImagesSubmit = async () => {
-		const imageSet = [...images];
-		const storageReference = storage.ref();
+	const handleImagesSubmit = async (imagesToUpload = []) => {
+		const imageSet =
+			imagesToUpload.length < 1 ? [...images] : [...imagesToUpload];
 		const carId = match.params.carId;
+		const storageReference = storage.ref();
+		const imagesLinks = [];
 
 		for (let image of imageSet) {
-			const metadata = {
-				size: image.data.size,
-				contentType: image.data.type,
-				name: `${image.data.name}_${carId}_${Date.now()}.${
-					image.data.type.split("/")[1]
-				}`
-			};
+			let imageExists = false;
 
-			const buffer = await image.data.arrayBuffer();
+			if (image.path) {
+				const imageReference = await storageReference
+					.child(image.path)
+					.getDownloadURL();
 
-			const uploadTask = storageReference
-				.child(`cars/${carId}/${metadata.name}`)
-				.put(buffer, metadata);
-
-			uploadTask.on(
-				props.firebase.storage.TaskEvent.STATE_CHANGED,
-				function(snapshot) {
-					var progress =
-						(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-					console.log("Upload is " + progress + "% done");
-					setUploadProgress(progress);
-
-					switch (snapshot.state) {
-						case props.firebase.storage.TaskState.PAUSED: // or 'paused'
-							console.log("Upload is paused");
-							break;
-						case props.firebase.storage.TaskState.RUNNING: // or 'running'
-							console.log("Upload is running");
-							break;
-					}
-				},
-				function(error) {
-					console.log(error);
-				},
-				function() {
-					// Upload completed successfully, now we can get the download URL
-					uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-						console.log("File available at", downloadURL);
-					});
+				if (imageReference) {
+					imageExists = true;
+					imagesLinks.push({ src: imageReference, path: image.path });
 				}
-			);
+			}
+
+			if (!imageExists) {
+				const uploadImageTask = await uploadImage(image, carId);
+
+				const downloadImageLink = await uploadImageTask.ref.getDownloadURL();
+				const imageFullPath = await uploadImageTask.ref.location.path;
+
+				imagesLinks.push({ src: downloadImageLink, path: imageFullPath });
+			}
 		}
 
-		// const carToUpdateReference = firestore.collection("cars").doc(car.id);
+		const carToUpdateReference = firestore.collection("cars").doc(carId);
+		const carsReference = carToUpdateReference.update({ images: imagesLinks });
+
+		carsReference
+			.then(() => {
+				toast("Imagens salvas com sucesso", {
+					type: "success",
+					hideProgressBar: true
+				});
+			})
+			.catch(err => {
+				console.log(err);
+				toast("Problemas ao salvar as imagens", {
+					type: "error",
+					hideProgressBar: true
+				});
+			});
+	};
+
+	const uploadImage = async (image, carId) => {
+		const storageReference = storage.ref();
+
+		const metadata = {
+			size: image.data.size,
+			contentType: image.data.type,
+			name: `${image.data.name}_${carId}_${Date.now()}.${
+				image.data.type.split("/")[1]
+			}`
+		};
+
+		const buffer = await image.data.arrayBuffer();
+
+		const uploadTask = await storageReference
+			.child(`cars/${carId}/${metadata.name}`)
+			.put(buffer, metadata);
+
+		return uploadTask;
 	};
 
 	const updateImageSet = (imagesToUpload, currentImages) => {
@@ -133,10 +152,22 @@ const CarroImagesFormContainer = props => {
 		return imagesToUpload.length + currentImages.length <= MAX_UPLOAD_IMAGES;
 	};
 
-	const removeImageFromImagesSet = imageKey => {
+	const removeImageFromImagesSet = async imageKey => {
+		const storageReference = storage.ref();
 		const currentImages = [...images];
-		currentImages.splice(imageKey, 1);
-		setImages(currentImages);
+		const excludeImages = currentImages.splice(imageKey, 1);
+
+		if (excludeImages.length > 0) {
+			const image = excludeImages[0];
+
+			if (image.path) {
+				var imageToRemoveReference = storageReference.child(image.path);
+				await imageToRemoveReference.delete();
+			}
+		}
+
+		await setImages(currentImages);
+		await handleImagesSubmit(currentImages);
 	};
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
