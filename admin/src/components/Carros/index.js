@@ -16,18 +16,18 @@ import withFirebase from "@firebase-app/withFirebase";
 
 const Carro = props => {
 	const { carro } = props;
-	let removeCarroPopoverRef;
 
 	return (
 		<Col xs={12} lg={3} md={3}>
 			<Card>
-				{carro.image && <Card.Img variant="top" src={carro.image} />}
+				{carro.images.length > 0 && (
+					<Card.Img height="150" variant="top" src={carro.images[0].src} />
+				)}
 				<Card.Body>
 					<Card.Title>{carro.modelo}</Card.Title>
 					<Card.Text>{carro.observacao}</Card.Text>
 					<ButtonToolbar>
 						<OverlayTrigger
-							key="top"
 							placement="top"
 							overlay={
 								<Tooltip id={`tooltip-top`}>
@@ -42,12 +42,11 @@ const Carro = props => {
 								size="sm"
 								className="mr-1"
 							>
-								<i class="fas fa-edit" />
+								<i className="fas fa-edit" />
 							</Button>
 						</OverlayTrigger>
 
 						<OverlayTrigger
-							key="top"
 							placement="top"
 							overlay={
 								<Tooltip id={`tooltip-top`}>
@@ -62,12 +61,11 @@ const Carro = props => {
 								size="sm"
 								className="mr-1"
 							>
-								<i class="fas fa-images" />
+								<i className="fas fa-images" />
 							</Button>
 						</OverlayTrigger>
 
 						<OverlayTrigger
-							key="top"
 							placement="right"
 							trigger="focus"
 							overlay={
@@ -86,7 +84,7 @@ const Carro = props => {
 							}
 						>
 							<Button variant="danger" size="sm">
-								<i class="fas fa-trash-alt" />
+								<i className="fas fa-trash-alt" />
 							</Button>
 						</OverlayTrigger>
 					</ButtonToolbar>
