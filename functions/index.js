@@ -2,13 +2,16 @@ const functions = require("firebase-functions");
 const admin = require("./admin");
 const { fromSnapshotToArray } = require("./admin/formater");
 
+const findCarsByOwnerId = async ownerId => {
+	const carsReference = admin.firestore().collection("cars");
+	const carsQuery = await carsReference.where("car_owner", "==", ownerId).get();
+
+	return fromSnapshotToArray(carsQuery);
+};
+
 exports.fetchAllCarsByOwner = functions.https.onCall((data, context) => {
 	const owner_id = context.auth.uid;
-
-	const carsReference = admin.firestore().collection("cars");
-	const carsQuery = carsReference.where("car_owner", "==", owner_id).get();
-
-	return carsQuery.then(fromSnapshotToArray);
+	return findCarsByOwnerId(owner_id);
 });
 
 exports.fetchCarById = functions.https.onCall((data, context) => {
@@ -40,5 +43,19 @@ exports.fetchCarById = functions.https.onCall((data, context) => {
 		}
 
 		return { id: document.id, ...car };
+	});
+});
+
+exports.removeCarById = functions.https.onCall((data, context) => {
+	const { id } = data;
+	const owner_id = context.auth.uid;
+
+	const carReference = admin
+		.firestore()
+		.collection("cars")
+		.doc(id);
+
+	return carReference.delete().then(() => {
+		return findCarsByOwnerId(owner_id);
 	});
 });

@@ -15,12 +15,12 @@ import withAuthentication from "@containers/withAuthentication";
 import withFirebase from "@firebase-app/withFirebase";
 
 const Carro = props => {
-	const { carro } = props;
+	const { carro, onRemove } = props;
 
 	return (
 		<Col xs={12} lg={3} md={3}>
 			<Card>
-				{carro.images.length > 0 && (
+				{carro.images && (
 					<Card.Img height="150" variant="top" src={carro.images[0].src} />
 				)}
 				<Card.Body>
@@ -76,7 +76,7 @@ const Carro = props => {
 										<Button variant="secondary" className="mr-1" size="sm">
 											Cancelar
 										</Button>
-										<Button variant="danger" size="sm">
+										<Button onClick={onRemove} variant="danger" size="sm">
 											Remover
 										</Button>
 									</Popover.Content>
@@ -103,6 +103,11 @@ const Carros = props => {
 		carsByOwners().then(carros => setCarros(carros.data));
 	}, []);
 
+	const handleRemoveCar = ({ id }) => {
+		const removeCarById = functions.httpsCallable("removeCarById");
+		removeCarById({ id }).then(carros => setCarros(carros.data));
+	};
+
 	return (
 		<Container className="mt-4">
 			<Row>
@@ -117,7 +122,11 @@ const Carros = props => {
 
 			<Row className="mt-3">
 				{carros.map((carro, carroIdx) => (
-					<Carro carro={carro} key={carroIdx} />
+					<Carro
+						carro={carro}
+						key={carroIdx}
+						onRemove={() => handleRemoveCar(carro)}
+					/>
 				))}
 			</Row>
 		</Container>

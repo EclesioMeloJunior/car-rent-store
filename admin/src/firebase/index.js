@@ -18,4 +18,5 @@ firebase.initializeApp(firebaseConfig);
 if (process.env.NODE_ENV === "development") {
 	firebase.functions().useFunctionsEmulator("http://localhost:5000");
 }
+
 export default firebase;
