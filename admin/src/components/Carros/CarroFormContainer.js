@@ -33,7 +33,7 @@ const CarroFormContainer = props => {
 
 	const handleSubmit = values => {
 		const car_owner = props.user.uid;
-		const car = { ...values, car_owner };
+		const car = { ...values, car_owner, disponivel: true };
 
 		let carsReference = firestore.collection("cars");
 

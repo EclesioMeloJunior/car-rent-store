@@ -59,3 +59,18 @@ exports.removeCarById = functions.https.onCall((data, context) => {
 		return findCarsByOwnerId(owner_id);
 	});
 });
+
+exports.changeCarDisponibilidade = functions.https.onCall((data, context) => {
+	const owner_id = context.auth.uid;
+
+	const carReference = admin
+		.firestore()
+		.collection("cars")
+		.doc(car_id);
+
+	const carDocument = carReference.get();
+
+	return carReference.delete().then(() => {
+		return findCarsByOwnerId(owner_id);
+	});
+});
