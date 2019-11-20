@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { compose } from "redux";
 import Container from "react-bootstrap/Container";
 import withFirebase from "@firebase-app/withFirebase";
@@ -65,6 +65,16 @@ const CARROS_ALUGADOS_DATA = [
 
 const Home = props => {
   const [carrosAlugados, setCarrosAlugados] = useState(CARROS_ALUGADOS_DATA);
+  const functions = props.firebase.functions();
+
+  useEffect(() => {
+    getAllAlugueis();
+  });
+
+  const getAllAlugueis = () => {
+    const getAllAlugueis = functions.httpsCallable("getAllAlugueis");
+    getAllAlugueis().then(alugueis => console.log(alugueis));
+  };
 
   return (
     <Container className="mt-4">
