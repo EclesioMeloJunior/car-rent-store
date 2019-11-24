@@ -62,7 +62,6 @@ const CarrosAlugados = props => {
             key={carroAlugado.id}
           >
             {defineActions(carroAlugado.status)}
-            <Dropdown.Item eventKey="2">Detalhes</Dropdown.Item>
           </DropdownButton>
         </ButtonToolbar>
       </td>
