@@ -6,8 +6,9 @@ cache:
     - node_modules
 script:
   - cd admin
-  - npm run build
+  - npm install
   - npm test
+  - npm run build
 fail_fast: true
 deploy:
   provider: heroku
