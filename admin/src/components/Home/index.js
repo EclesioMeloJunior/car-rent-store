@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { compose } from "redux";
 import Container from "react-bootstrap/Container";
-import withFirebase from "@firebase-app/withFirebase";
-import withMainContainer from "@containers/withMainContainer";
-import withAuthentication from "@containers/withAuthentication";
+import withFirebase from "../../firebase/withFirebase";
+import withMainContainer from "../../containers/withMainContainer";
+import withAuthentication from "../../containers/withAuthentication";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";

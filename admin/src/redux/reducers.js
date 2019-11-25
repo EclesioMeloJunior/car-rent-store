@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import auth from "@redux/auth";
+import auth from "./auth";
 import { reducer as form } from "redux-form";
 
 const REDUCERS = { auth, form };

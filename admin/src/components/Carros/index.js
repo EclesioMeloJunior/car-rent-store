@@ -11,9 +11,9 @@ import Tooltip from "react-bootstrap/Tooltip";
 import Popover from "react-bootstrap/Popover";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import withFirebase from "@firebase-app/withFirebase";
-import withMainContainer from "@containers/withMainContainer";
-import withAuthentication from "@containers/withAuthentication";
+import withFirebase from "../../firebase/withFirebase";
+import withMainContainer from "../../containers/withMainContainer";
+import withAuthentication from "../../containers/withAuthentication";
 
 const limitString = text => {
   return text.length < 25 ? text : `${text.slice(0, 25)}...`;
