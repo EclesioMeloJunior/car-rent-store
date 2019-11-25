@@ -64,16 +64,19 @@ const CARROS_ALUGADOS_DATA = [
 ];
 
 const Home = props => {
-  const [carrosAlugados, setCarrosAlugados] = useState(CARROS_ALUGADOS_DATA);
+  const [carrosAlugados, setCarrosAlugados] = useState([]);
   const functions = props.firebase.functions();
 
   useEffect(() => {
     getAllAlugueis();
-  });
+  }, []);
 
   const getAllAlugueis = () => {
     const getAllAlugueis = functions.httpsCallable("getAllAlugueis");
-    getAllAlugueis().then(alugueis => console.log(alugueis));
+    getAllAlugueis().then(alugueis => {
+      console.log(alugueis.data);
+      setCarrosAlugados(alugueis.data);
+    });
   };
 
   return (
@@ -100,11 +103,8 @@ const Home = props => {
               <tr>
                 <th>#</th>
                 <th>Cliente</th>
-                <th>Carro</th>
                 <th>Saída</th>
                 <th>Entrega</th>
-                <th>E-mail</th>
-                <th>Telefone</th>
                 <th>Status</th>
                 <th />
               </tr>

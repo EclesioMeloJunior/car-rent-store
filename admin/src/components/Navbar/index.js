@@ -15,12 +15,6 @@ const AuthNavbar = props => (
       <Link className="nav-link" to="/carros">
         Meus Carros
       </Link>
-      <Link className="nav-link" to="/cidades">
-        Cidades
-      </Link>
-      <Link className="nav-link" to="/configuracoes">
-        Configurações
-      </Link>
     </Nav>
     <NavDropdown
       title={props.user.displayName}

@@ -79,7 +79,23 @@ exports.getAllAlugueis = functions.https.onCall(async (data, context) => {
   const alugueisReference = admin.firestore().collection("alugueis");
   const alugueisQuery = await alugueisReference.get();
 
-  const alugueis = await fromSnapshotToArray(alugueisQuery);
+  const getCarroById = async aluguel => {
+    const carroId = aluguel.carro;
+
+    const carro = await admin
+      .firestore()
+      .collection("cars")
+      .doc(carroId)
+      .get();
+
+    if (carro.exists) {
+      return carro.data();
+    }
+
+    return null;
+  };
+
+  return fromSnapshotToArray(alugueisQuery);
 });
 
 exports.buscarCarros = functions.https.onRequest((request, response) => {

@@ -46,11 +46,8 @@ const CarrosAlugados = props => {
     <tr>
       <td>{carroAlugado.id}</td>
       <td>{carroAlugado.pessoa.nome}</td>
-      <td>{carroAlugado.carro}</td>
       <td>30/11/2019</td>
       <td>03/12/2019</td>
-      <td>{carroAlugado.pessoa.email}</td>
-      <td>{carroAlugado.pessoa.telefone}</td>
       <td>{defineStatus(carroAlugado.status)}</td>
       <td>
         <ButtonToolbar>
@@ -62,6 +59,9 @@ const CarrosAlugados = props => {
             key={carroAlugado.id}
           >
             {defineActions(carroAlugado.status)}
+            <React.Fragment>
+              <Dropdown.Item eventKey="1">Detalhes do Aluguel</Dropdown.Item>
+            </React.Fragment>
           </DropdownButton>
         </ButtonToolbar>
       </td>

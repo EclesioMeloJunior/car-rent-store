@@ -65,7 +65,3 @@ describe("Quando buscar os carros alugados na API", () => {
     expect(componentsTree.length).toBe(CARROS_ALUGADOS_DATA.length);
   });
 });
-
-describe("Quando aceitar uma reserva", () => {
-  test("Deve enviar a requisição", () => {});
-});
