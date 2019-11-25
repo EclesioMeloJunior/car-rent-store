@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { compose } from "redux";
 import { withRouter } from "react-router-dom";
 import withMainContainer from "../../containers/withMainContainer";

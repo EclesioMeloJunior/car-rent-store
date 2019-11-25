@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { compose } from "redux";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -20,7 +20,7 @@ const limitString = text => {
 };
 
 const Carro = props => {
-  const { carro, isLoading, onRemove, handleCheckChange } = props;
+  const { carro, onRemove, handleCheckChange } = props;
   const [carroIsLoading, setCarroIsLoading] = useState(false);
 
   return (
@@ -127,7 +127,7 @@ const Carros = props => {
   useEffect(() => {
     const carsByOwners = functions.httpsCallable("fetchAllCarsByOwner");
     carsByOwners().then(carros => setCarros(carros.data));
-  }, []);
+  }, [functions]);
 
   const handleRemoveCar = ({ id }) => {
     const removeCarById = functions.httpsCallable("removeCarById");
@@ -159,7 +159,7 @@ const Carros = props => {
       <Row className="mt-3">
         {carros.map((carro, carroIdx) => (
           <Carro
-            className={(carroIdx + 1) % 4 == 0 ? "mt-2" : "mt-0"}
+            className={(carroIdx + 1) % 4 === 0 ? "mt-2" : "mt-0"}
             carro={carro}
             key={carroIdx}
             onRemove={() => handleRemoveCar(carro)}
