@@ -12,57 +12,6 @@ import FormControl from "react-bootstrap/FormControl";
 import Table from "react-bootstrap/Table";
 import CarrosAlugados from "./CarrosAlugados";
 
-const CARROS_ALUGADOS_DATA = [
-  {
-    id: 4,
-    carro: "Ford Docus 3.0",
-    pessoa: {
-      nome: "Márcio Fernandez",
-      email: "marcio@fernandez.com",
-      telefone: "69 9 8105-0108"
-    },
-    start_at: new Date("2019-11-29"),
-    end_at: new Date("2019-12-03"),
-    status: "reservado"
-  },
-  {
-    id: 3,
-    carro: "Ford Docus 3.0",
-    pessoa: {
-      nome: "Márcio Fernandez",
-      email: "marcio@fernandez.com",
-      telefone: "69 9 8105-0108"
-    },
-    start_at: new Date("2019-11-29"),
-    end_at: new Date("2019-12-03"),
-    status: "reservado"
-  },
-  {
-    id: 2,
-    carro: "Ford Docus 3.0",
-    pessoa: {
-      nome: "Márcio Fernandez",
-      email: "marcio@fernandez.com",
-      telefone: "69 9 8105-0108"
-    },
-    start_at: new Date("2019-11-29"),
-    end_at: new Date("2019-12-03"),
-    status: "pendente"
-  },
-  {
-    id: 1,
-    carro: "Ford Docus 3.0",
-    pessoa: {
-      nome: "Márcio Fernandez",
-      email: "marcio@fernandez.com",
-      telefone: "69 9 8105-0108"
-    },
-    start_at: new Date("2019-11-29"),
-    end_at: new Date("2019-12-03"),
-    status: "reservado"
-  }
-];
-
 const Home = props => {
   const [carrosAlugados, setCarrosAlugados] = useState([]);
   const functions = props.firebase.functions();
@@ -103,8 +52,8 @@ const Home = props => {
               <tr>
                 <th>#</th>
                 <th>Cliente</th>
-                <th>Saída</th>
-                <th>Entrega</th>
+                <th>Checkin</th>
+                <th>Checkout</th>
                 <th>Status</th>
                 <th />
               </tr>

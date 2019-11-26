@@ -1,8 +1,10 @@
 import React from "react";
+import moment from "moment";
 import Badge from "react-bootstrap/Badge";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
+import firebase from "../../firebase";
 
 const defineStatus = status => {
   switch (status) {
@@ -46,8 +48,22 @@ const CarrosAlugados = props => {
     <tr>
       <td>{carroAlugado.id}</td>
       <td>{carroAlugado.pessoa.nome}</td>
-      <td>30/11/2019</td>
-      <td>03/12/2019</td>
+      <td>
+        {moment(
+          new firebase.firestore.Timestamp(
+            carroAlugado.checkin._seconds,
+            carroAlugado.checkin._nanoseconds
+          ).toDate()
+        ).format("DD/MM/YYYY")}
+      </td>
+      <td>
+        {moment(
+          new firebase.firestore.Timestamp(
+            carroAlugado.checkout._seconds,
+            carroAlugado.checkout._nanoseconds
+          ).toDate()
+        ).format("DD/MM/YYYY")}
+      </td>
       <td>{defineStatus(carroAlugado.status)}</td>
       <td>
         <ButtonToolbar>
