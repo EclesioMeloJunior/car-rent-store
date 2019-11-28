@@ -53,7 +53,7 @@ const aluguel = (state = aluguelInitialState, action) => {
       };
     }
 
-    case aluguelTypes.CONFIRMAR_ALUGUEL_MODAL_CLOSE: {
+    case aluguelTypes.FINALIZAR_ALUGUEL_MODAL_CLOSE: {
       return {
         ...state,
         finalizarAluguel: {

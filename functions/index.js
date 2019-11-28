@@ -95,7 +95,19 @@ exports.getAllAlugueis = functions.https.onCall(async (data, context) => {
     return null;
   };
 
-  return fromSnapshotToArray(alugueisQuery);
+  const alugueis = [];
+
+  for (const aluguel of fromSnapshotToArray(alugueisQuery)) {
+    const carro = await getCarroById(aluguel);
+
+    if (carro) {
+      alugueis.push({ ...aluguel, carro });
+    } else {
+      alugueis.push({ ...aluguel });
+    }
+  }
+
+  return alugueis;
 });
 
 exports.buscarCarros = functions.https.onRequest((request, response) => {
