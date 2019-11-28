@@ -1,15 +1,17 @@
 import React from "react";
 import moment from "moment";
-import Badge from "react-bootstrap/Badge";
-import ButtonToolbar from "react-bootstrap/ButtonToolbar";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
 import firebase from "../../firebase";
+import Badge from "react-bootstrap/Badge";
+import Dropdown from "react-bootstrap/Dropdown";
+import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import { connect } from "react-redux";
+import { aluguelTypes } from "../../redux/aluguel";
 
 const defineStatus = status => {
   switch (status) {
     case "reservado": {
-      return <Badge variant="dark">Reservado</Badge>;
+      return <Badge variant="dark">Alugado</Badge>;
     }
     case "pendente": {
       return <Badge variant="warning">Pendente</Badge>;
@@ -19,20 +21,31 @@ const defineStatus = status => {
   }
 };
 
-const defineActions = status => {
+const defineActions = (
+  status,
+  confirmarAluguel,
+  finalizarAluguel,
+  cancelarReserva
+) => {
   switch (status) {
     case "reservado": {
       return (
         <React.Fragment>
-          <Dropdown.Item eventKey="1">Finalizar Aluguel</Dropdown.Item>
+          <Dropdown.Item eventKey="1" onClick={() => finalizarAluguel()}>
+            Finalizar Aluguel
+          </Dropdown.Item>
         </React.Fragment>
       );
     }
     case "pendente": {
       return (
         <React.Fragment>
-          <Dropdown.Item eventKey="1">Confirmar Aluguel</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Cancelar Reserva</Dropdown.Item>
+          <Dropdown.Item eventKey="1" onClick={() => confirmarAluguel()}>
+            Confirmar Aluguel
+          </Dropdown.Item>
+          <Dropdown.Item eventKey="2" onClick={() => cancelarReserva()}>
+            Cancelar Reserva
+          </Dropdown.Item>
         </React.Fragment>
       );
     }
@@ -42,7 +55,18 @@ const defineActions = status => {
 };
 
 const CarrosAlugados = props => {
-  const { carroAlugado } = props;
+  const { carroAlugado, confirmarAluguel, finalizarAluguel } = props;
+
+  const cancelarReserva = () => {};
+
+  const handleFinalizarAluguel = () => {
+    finalizarAluguel(carroAlugado);
+  };
+
+  const handleConfirmarAluguel = () => {
+    console.log("Aqui");
+    confirmarAluguel(carroAlugado);
+  };
 
   return (
     <tr>
@@ -74,7 +98,12 @@ const CarrosAlugados = props => {
             id={`dropdown-button-drop-${carroAlugado.id}`}
             key={carroAlugado.id}
           >
-            {defineActions(carroAlugado.status)}
+            {defineActions(
+              carroAlugado.status,
+              handleConfirmarAluguel,
+              handleFinalizarAluguel,
+              cancelarReserva
+            )}
             <React.Fragment>
               <Dropdown.Item eventKey="1">Detalhes do Aluguel</Dropdown.Item>
             </React.Fragment>
@@ -85,4 +114,18 @@ const CarrosAlugados = props => {
   );
 };
 
-export default CarrosAlugados;
+const mapDispatchToProps = dispatch => ({
+  confirmarAluguel: carroAlugado =>
+    dispatch({
+      type: aluguelTypes.CONFIRMAR_ALUGUEL_MODAL_OPEN,
+      payload: carroAlugado
+    }),
+
+  finalizarAluguel: carroAlugado =>
+    dispatch({
+      type: aluguelTypes.FINALIZAR_ALUGUEL_MODAL_OPEN,
+      payload: carroAlugado
+    })
+});
+
+export default connect(() => ({}), mapDispatchToProps)(CarrosAlugados);
