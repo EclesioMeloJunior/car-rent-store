@@ -110,11 +110,134 @@ exports.getAllAlugueis = functions.https.onCall(async (data, context) => {
   return alugueis;
 });
 
-exports.buscarCarros = functions.https.onRequest((request, response) => {
-  return response.json({
-    source:
-      "https://firebasestorage.googleapis.com/v0/b/car-rent-store.appspot.com/o/cars%2FbaiKxGuvi3qNr1duXsT6%2F592912017561507.jpg_baiKxGuvi3qNr1duXsT6_1567000137943.jpeg?alt=media&token=48e8f9e8-ce2c-46af-a40d-1e011bbf22e1",
-    name: "Carro",
-    description: "Disponível"
-  });
+exports.interacoes = functions.https.onRequest(async (request, response) => {
+  const owner = request.headers["authorization"];
+  const type = request.body.type || "buscar_carros";
+
+  if (!owner) {
+    return response.json({ message: "Contate o administrador da locadora" });
+  }
+
+  switch (type) {
+    case "buscar_carros": {
+      const carros = await buscarCarros(owner, request.body);
+      return response.json({ data: carros });
+    }
+
+    case "realizar_reserva": {
+      const numero_reserva = await realizarReserva(owner, request.body);
+      return response.json({ numero_reserva });
+    }
+
+    default: {
+      return response.json({ data: [] });
+    }
+  }
 });
+
+const buscarCarros = async (ownerId, { marca, modelo }) => {
+  const cars = await findCarsByOwnerId(ownerId);
+
+  const marcaLower = marca ? marca.toLowerCase() : "";
+  const modeloLower = modelo ? modelo.toLowerCase() : "";
+
+  return cars
+    .filter(carro => carro.disponivel)
+    .filter(carro => {
+      const carroMarca = carro.marca.toLowerCase();
+      const carroModelo = carro.modelo.toLowerCase();
+
+      if (!marcaLower && !modeloLower) return true;
+
+      if (marcaLower && modeloLower) {
+        return (
+          marcaLower &&
+          carroMarca.includes(marcaLower) &&
+          modeloLower &&
+          carroModelo.includes(modeloLower)
+        );
+      }
+
+      return (
+        (marcaLower && carroMarca.includes(marcaLower)) ||
+        (modeloLower && carroModelo.includes(modeloLower))
+      );
+    })
+
+    .map(carro => {
+      const carDescription = `Ano: ${carro.ano} \n Placa: ${carro.placa} \n Km: ${carro.km_atual}`;
+
+      return {
+        id: carro.id,
+        placa: carro.placa,
+        name: carro.modelo,
+        source: carro.images[0].src,
+        description: carDescription,
+        modelo: carro.modelo,
+        marca: carro.marca
+      };
+    });
+};
+
+const realizarReserva = async (ownerId, requestBody) => {
+  const { data, horas, carro, email, telefone, nome } = requestBody;
+
+  const findCarByPlaca = async (ownerId, placa) => {
+    const carsReference = admin.firestore().collection("cars");
+
+    const carsQuery = await carsReference
+      .where("car_owner", "==", ownerId)
+      .where("placa", "==", placa)
+      .get();
+
+    const carros = fromSnapshotToArray(carsQuery);
+
+    if (carros.length === 0) return null;
+
+    return carros[0];
+  };
+
+  const changeCarDisponibility = async carId => {
+    const carReference = admin
+      .firestore()
+      .collection("cars")
+      .doc(carId);
+
+    await carReference.update({
+      disponivel: false
+    });
+  };
+
+  const createReserva = async reservaModel => {
+    await changeCarDisponibility(reservaModel.carro);
+
+    return await admin
+      .firestore()
+      .collection("alugueis")
+      .add(reservaModel);
+  };
+
+  const placaCarro = carro.split(":")[1].trim();
+  const carroToRent = await findCarByPlaca(ownerId, placaCarro);
+
+  if (!carroToRent) return null;
+  if (!carroToRent.disponivel) return null;
+
+  const carroId = carroToRent.id;
+
+  const reservaModel = {
+    carro: carroId,
+    checkout: null,
+    checkin: new Date(`${data}T${horas}`),
+    pessoa: {
+      email,
+      telefone,
+      nome
+    },
+    status: "pendente"
+  };
+
+  const reserva = await createReserva(reservaModel);
+
+  return reserva.id;
+};

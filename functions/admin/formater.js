@@ -1,9 +1,9 @@
 function fromSnapshotToArray(querySnapshot) {
-	const normalArray = querySnapshot.docs.map(doc => {
-		return { ...doc.data(), id: doc.id };
-	});
+  const normalArray = querySnapshot.docs.map(doc => {
+    return { ...doc.data(), id: doc.id };
+  });
 
-	return normalArray;
+  return normalArray;
 }
 
 module.exports = { fromSnapshotToArray };

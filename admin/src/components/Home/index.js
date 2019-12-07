@@ -25,7 +25,6 @@ const Home = props => {
   const getAllAlugueis = () => {
     const getAllAlugueis = functions.httpsCallable("getAllAlugueis");
     getAllAlugueis().then(alugueis => {
-      console.log(alugueis.data);
       setCarrosAlugados(alugueis.data);
     });
   };

@@ -81,12 +81,14 @@ const CarrosAlugados = props => {
         ).format("DD/MM/YYYY")}
       </td>
       <td>
-        {moment(
-          new firebase.firestore.Timestamp(
-            carroAlugado.checkout._seconds,
-            carroAlugado.checkout._nanoseconds
-          ).toDate()
-        ).format("DD/MM/YYYY")}
+        {carroAlugado.checkout
+          ? moment(
+              new firebase.firestore.Timestamp(
+                carroAlugado.checkout._seconds,
+                carroAlugado.checkout._nanoseconds
+              ).toDate()
+            ).format("DD/MM/YYYY")
+          : ""}
       </td>
       <td>{defineStatus(carroAlugado.status)}</td>
       <td>
