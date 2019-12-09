@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import firebase from "../../firebase";
@@ -10,13 +10,35 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 const ConfirmarAluguel = props => {
-  const { confirmarAluguel, closeConfirmarAluguel } = props;
+  const {
+    confirmarAluguel,
+    closeConfirmarAluguel,
+    onConfirmation,
+    updateDataEntrega
+  } = props;
 
   const onClose = () => {
     closeConfirmarAluguel();
   };
 
-  const onConfirmation = () => {};
+  const handleDataEntregaChange = ({ target }) => {
+    const dataEntrega = target.value;
+    updateDataEntrega(dataEntrega);
+  };
+
+  const formatDataEntrega = dataEntrega => {
+    console.log(typeof dataEntrega);
+    if (dataEntrega && dataEntrega._seconds && dataEntrega._nanoseconds) {
+      return moment(
+        new firebase.firestore.Timestamp(
+          dataEntrega._seconds,
+          dataEntrega._nanoseconds
+        ).toDate()
+      ).format("YYYY-MM-DD");
+    }
+
+    return dataEntrega || "";
+  };
 
   if (!confirmarAluguel.reserva) {
     return <React.Fragment></React.Fragment>;
@@ -59,7 +81,7 @@ const ConfirmarAluguel = props => {
                       confirmarAluguel.reserva.checkin._seconds,
                       confirmarAluguel.reserva.checkin._nanoseconds
                     ).toDate()
-                  ).format("DD/MM/YYYY")}
+                  ).format("YYYY/MM/DD")}
                   readOnly
                   type="text"
                 />
@@ -71,14 +93,9 @@ const ConfirmarAluguel = props => {
                 <Form.Label>Devolução Em</Form.Label>
                 <Form.Control
                   size="sm"
-                  value={moment(
-                    new firebase.firestore.Timestamp(
-                      confirmarAluguel.reserva.checkout._seconds,
-                      confirmarAluguel.reserva.checkout._nanoseconds
-                    ).toDate()
-                  ).format("DD/MM/YYYY")}
-                  readOnly
-                  type="text"
+                  value={formatDataEntrega(confirmarAluguel.reserva.checkout)}
+                  onChange={handleDataEntregaChange}
+                  type="date"
                 />
               </Form.Group>
             </Col>
@@ -103,7 +120,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   closeConfirmarAluguel: () =>
-    dispatch({ type: aluguelTypes.CONFIRMAR_ALUGUEL_MODAL_CLOSE })
+    dispatch({ type: aluguelTypes.CONFIRMAR_ALUGUEL_MODAL_CLOSE }),
+
+  updateDataEntrega: dataEntrega =>
+    dispatch({ type: aluguelTypes.UPDATE_DATA_ENTREGA, payload: dataEntrega })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConfirmarAluguel);

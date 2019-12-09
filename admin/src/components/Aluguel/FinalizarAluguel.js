@@ -70,12 +70,16 @@ const FinalizarAluguel = props => {
                 <Form.Label>Devolução Em</Form.Label>
                 <Form.Control
                   size="sm"
-                  value={moment(
-                    new firebase.firestore.Timestamp(
-                      finalizarAluguel.aluguel.checkout._seconds,
-                      finalizarAluguel.aluguel.checkout._nanoseconds
-                    ).toDate()
-                  ).format("DD/MM/YYYY")}
+                  value={
+                    finalizarAluguel.aluguel.checkout
+                      ? moment(
+                          new firebase.firestore.Timestamp(
+                            finalizarAluguel.aluguel.checkout._seconds,
+                            finalizarAluguel.aluguel.checkout._nanoseconds
+                          ).toDate()
+                        ).format("DD/MM/YYYY")
+                      : ""
+                  }
                   readOnly
                   type="text"
                 />

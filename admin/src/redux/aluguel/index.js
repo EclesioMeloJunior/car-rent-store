@@ -3,7 +3,9 @@ export const aluguelTypes = {
   CONFIRMAR_ALUGUEL_MODAL_CLOSE: "@aluguel/CONFIRMAR_RESERVA_MODAL_CLOSE",
 
   FINALIZAR_ALUGUEL_MODAL_OPEN: "@aluguel/FINALIZAR_ALUGUEL_MODAL_OPEN",
-  FINALIZAR_ALUGUEL_MODAL_CLOSE: "@aluguel/FINALIZAR_ALUGUEL_MODAL_CLOSE"
+  FINALIZAR_ALUGUEL_MODAL_CLOSE: "@aluguel/FINALIZAR_ALUGUEL_MODAL_CLOSE",
+
+  UPDATE_DATA_ENTREGA: "@aluguel/UPDATE_DATA_ENTREGA"
 };
 
 const aluguelInitialState = {
@@ -60,6 +62,19 @@ const aluguel = (state = aluguelInitialState, action) => {
           ...state.confirmarAluguel,
           modalOpen: false,
           aluguel: null
+        }
+      };
+    }
+
+    case aluguelTypes.UPDATE_DATA_ENTREGA: {
+      return {
+        ...state,
+        confirmarAluguel: {
+          ...state.confirmarAluguel,
+          reserva: {
+            ...state.confirmarAluguel.reserva,
+            checkout: action.payload
+          }
         }
       };
     }
