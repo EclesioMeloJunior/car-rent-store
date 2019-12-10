@@ -15,6 +15,7 @@ import Table from "react-bootstrap/Table";
 import CarrosAlugados from "./CarrosAlugados";
 import ConfirmarAluguel from "../Aluguel/ConfirmarAluguel";
 import FinalizarAluguel from "../Aluguel/FinalizarAluguel";
+import moment from "moment";
 
 const Home = props => {
   const { aluguel } = props;
@@ -35,24 +36,33 @@ const Home = props => {
   };
 
   const handleConfirmaReserva = async () => {
+    console.log("confirmar reserva");
+
     if (!aluguel.confirmarAluguel.reserva) return;
 
     const reserva = {
-      ...aluguel.confirmarAluguel.reserva,
-      status: "reservado",
-      checkout: new Date(aluguel.confirmarAluguel.reserva.checkout)
+      id: aluguel.confirmarAluguel.reserva.id,
+      checkout: moment(aluguel.confirmarAluguel.reserva.checkout).format(
+        "YYYY-MM-DD"
+      )
     };
 
-    firestore
-      .collection("alugueis")
-      .doc(reserva.id)
-      .update(reserva)
-      .then(() => {
-        toast("Confirmação efetuada com sucesso", {
+    const confirmarAluguel = functions.httpsCallable("confirmarAluguel");
+    confirmarAluguel(reserva).then(response => {
+      if (!response) {
+        toast("Falha ao confirmar a locação", {
+          type: "error",
+          hideProgressBar: true
+        });
+      } else {
+        toast("Confirmação feita com sucesso!", {
           type: "success",
           hideProgressBar: true
         });
-      });
+
+        getAllAlugueis();
+      }
+    });
   };
 
   return (

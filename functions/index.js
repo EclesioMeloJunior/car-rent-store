@@ -110,6 +110,25 @@ exports.getAllAlugueis = functions.https.onCall(async (data, context) => {
   return alugueis;
 });
 
+exports.confirmarAluguel = functions.https.onCall(async (data, context) => {
+  const { id, checkout } = data;
+
+  console.log(checkout);
+
+  if (!id || !checkout || checkout === "Invalid date") return null;
+
+  const checkoutToDate = new Date(checkout);
+
+  return await admin
+    .firestore()
+    .collection("alugueis")
+    .doc(id)
+    .update({
+      status: "reservado",
+      checkout: checkoutToDate
+    });
+});
+
 exports.interacoes = functions.https.onRequest(async (request, response) => {
   const owner = request.headers["authorization"];
   const type = request.body.type || "buscar_carros";
