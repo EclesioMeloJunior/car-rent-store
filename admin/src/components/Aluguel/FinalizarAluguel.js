@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import firebase from "../../firebase";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+
+import { createNumberMask } from "redux-form-input-masks";
 import { aluguelTypes } from "../../redux/aluguel";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
+const kmAtualFieldMask = createNumberMask({
+  prefix: "KM ",
+  locale: "pt-BR",
+  decimalPlaces: 2
+});
+
 const FinalizarAluguel = props => {
-  const { finalizarAluguel, closeFinalizarAluguel } = props;
+  const { finalizarAluguel, closeFinalizarAluguel, onConfirmation } = props;
+
+  const [atualizarKm, setAtualizarKm] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
   const onClose = () => {
     closeFinalizarAluguel();
   };
-
-  const onConfirmation = () => {};
 
   if (!finalizarAluguel.aluguel) {
     return <React.Fragment></React.Fragment>;
@@ -88,11 +97,22 @@ const FinalizarAluguel = props => {
           </Row>
           <Form.Group controlId="formBasicPassword">
             <Form.Label>Atualizar KM</Form.Label>
-            <Form.Control size="sm" type="text" />
+            <Form.Control
+              value={atualizarKm}
+              onChange={({ target }) => setAtualizarKm(target.value)}
+              size="sm"
+              type="text"
+            />
           </Form.Group>
           <Form.Group controlId="formBasicPassword">
             <Form.Label>Observação</Form.Label>
-            <Form.Control size="sm" as="textarea" rows="3" />
+            <Form.Control
+              value={observacoes}
+              onChange={({ target }) => setObservacoes(target.value)}
+              size="sm"
+              as="textarea"
+              rows="3"
+            />
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -100,7 +120,15 @@ const FinalizarAluguel = props => {
         <Button variant="secondary" onClick={onClose}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={onConfirmation}>
+        <Button
+          variant="primary"
+          onClick={() =>
+            onConfirmation(
+              { atualizarKm, observacoes },
+              finalizarAluguel.aluguel.id
+            )
+          }
+        >
           Confirmar
         </Button>
       </Modal.Footer>

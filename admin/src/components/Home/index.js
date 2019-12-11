@@ -16,13 +16,17 @@ import CarrosAlugados from "./CarrosAlugados";
 import ConfirmarAluguel from "../Aluguel/ConfirmarAluguel";
 import FinalizarAluguel from "../Aluguel/FinalizarAluguel";
 import moment from "moment";
+import DetalhesAluguel from "../Aluguel/DetalhesAluguel";
 
 const Home = props => {
   const { aluguel } = props;
+
+  const [detalhesModal, setDetalhesModal] = useState(false);
+  const [aluguelDetalhes, setAluguelDetalhes] = useState(null);
+
   const [carrosAlugados, setCarrosAlugados] = useState([]);
 
   const functions = props.firebase.functions();
-  const firestore = props.firebase.firestore();
 
   useEffect(() => {
     getAllAlugueis();
@@ -48,6 +52,7 @@ const Home = props => {
     };
 
     const confirmarAluguel = functions.httpsCallable("confirmarAluguel");
+
     confirmarAluguel(reserva).then(response => {
       if (!response) {
         toast("Falha ao confirmar a locação", {
@@ -62,6 +67,46 @@ const Home = props => {
 
         getAllAlugueis();
       }
+    });
+  };
+
+  const handleFinalizarReserva = async (
+    { atualizarKm, observacoes },
+    aluguelId
+  ) => {
+    console.log(aluguelId, atualizarKm, observacoes);
+    const confirmarAluguel = functions.httpsCallable("finalizarAluguel");
+
+    const response = await confirmarAluguel({
+      id: aluguelId,
+      km: atualizarKm,
+      observacao: observacoes
+    });
+
+    if (response) {
+      toast("Locação finalizada", {
+        type: "success",
+        hideProgressBar: true
+      });
+
+      getAllAlugueis();
+    } else {
+      toast("Falha ao finalizar a locação", {
+        type: "error",
+        hideProgressBar: true
+      });
+    }
+  };
+
+  const handleDetalhesModal = aluguelSelected => {
+    setDetalhesModal(prev => {
+      if (!prev) {
+        setAluguelDetalhes(aluguelSelected);
+        return true;
+      }
+
+      setAluguelDetalhes(null);
+      return false;
     });
   };
 
@@ -100,6 +145,7 @@ const Home = props => {
                 <CarrosAlugados
                   carroAlugado={carroAlugado}
                   key={carroAlugadoIdx}
+                  openDetalhes={() => handleDetalhesModal(carroAlugado)}
                 />
               ))}
             </tbody>
@@ -108,8 +154,12 @@ const Home = props => {
       </Row>
 
       <ConfirmarAluguel onConfirmation={handleConfirmaReserva} />
-
-      <FinalizarAluguel />
+      <FinalizarAluguel onConfirmation={handleFinalizarReserva} />
+      <DetalhesAluguel
+        onClose={() => handleDetalhesModal(null)}
+        open={detalhesModal}
+        aluguel={aluguelDetalhes}
+      />
     </Container>
   );
 };

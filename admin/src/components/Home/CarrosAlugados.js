@@ -16,6 +16,9 @@ const defineStatus = status => {
     case "pendente": {
       return <Badge variant="warning">Pendente</Badge>;
     }
+    case "finalizado": {
+      return <Badge variant="primary">Finalizado</Badge>;
+    }
     default:
       return <React.Fragment />;
   }
@@ -55,7 +58,12 @@ const defineActions = (
 };
 
 const CarrosAlugados = props => {
-  const { carroAlugado, confirmarAluguel, finalizarAluguel } = props;
+  const {
+    carroAlugado,
+    confirmarAluguel,
+    finalizarAluguel,
+    openDetalhes
+  } = props;
 
   const cancelarReserva = () => {};
 
@@ -64,7 +72,6 @@ const CarrosAlugados = props => {
   };
 
   const handleConfirmarAluguel = () => {
-    console.log("Aqui");
     confirmarAluguel(carroAlugado);
   };
 
@@ -107,7 +114,9 @@ const CarrosAlugados = props => {
               cancelarReserva
             )}
             <React.Fragment>
-              <Dropdown.Item eventKey="1">Detalhes do Aluguel</Dropdown.Item>
+              <Dropdown.Item onClick={openDetalhes} eventKey="1">
+                Detalhes do Aluguel
+              </Dropdown.Item>
             </React.Fragment>
           </DropdownButton>
         </ButtonToolbar>

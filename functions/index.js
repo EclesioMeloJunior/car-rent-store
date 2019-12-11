@@ -110,6 +110,33 @@ exports.getAllAlugueis = functions.https.onCall(async (data, context) => {
   return alugueis;
 });
 
+exports.getAluguelById = functions.https.onCall(async (data, context) => {
+  const { id } = data;
+
+  if (!id) return null;
+
+  const aluguel = await admin
+    .firestore()
+    .collection("alugueis")
+    .doc(id)
+    .get();
+
+  const carroAluguelId = aluguel.data().carro;
+
+  const carro = await admin
+    .firestore()
+    .collection("cars")
+    .doc(carroAluguelId)
+    .get();
+
+  return {
+    ...aluguel.data(),
+    carro: {
+      ...carro
+    }
+  };
+});
+
 exports.confirmarAluguel = functions.https.onCall(async (data, context) => {
   const { id, checkout } = data;
 
@@ -126,6 +153,46 @@ exports.confirmarAluguel = functions.https.onCall(async (data, context) => {
     .update({
       status: "reservado",
       checkout: checkoutToDate
+    });
+});
+
+exports.finalizarAluguel = functions.https.onCall(async (data, context) => {
+  const { id, km, observacao } = data;
+
+  const aluguel = await admin
+    .firestore()
+    .collection("alugueis")
+    .doc(id)
+    .get();
+
+  const carroAluguelId = aluguel.data().carro;
+
+  const carro = await admin
+    .firestore()
+    .collection("cars")
+    .doc(carroAluguelId)
+    .get();
+
+  const carroKm = Number(carro.data().km_atual);
+
+  const carroNovoKm = carroKm + km ? Number(km) : 0;
+
+  await admin
+    .firestore()
+    .collection("cars")
+    .doc(carroAluguelId)
+    .update({
+      km_atual: carroNovoKm,
+      disponivel: true
+    });
+
+  return await admin
+    .firestore()
+    .collection("alugueis")
+    .doc(id)
+    .update({
+      status: "finalizado",
+      observacao
     });
 });
 
