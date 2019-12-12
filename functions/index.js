@@ -1,6 +1,9 @@
 const functions = require("firebase-functions");
 const admin = require("./admin");
 const { fromSnapshotToArray } = require("./admin/formater");
+const mail = require("./mailer");
+const cors = require("cors")({ origin: true });
+const moment = require("moment");
 
 const findCarsByOwnerId = async ownerId => {
   const carsReference = admin.firestore().collection("cars");
@@ -215,6 +218,18 @@ exports.interacoes = functions.https.onRequest(async (request, response) => {
       return response.json({ numero_reserva });
     }
 
+    case "recuperar_codigo": {
+      return cors(request, response, async () => {
+        const codigos = await recuperarCodigo(request.body);
+        return response.json({ codigos: codigos });
+      });
+    }
+
+    case "consultar_reserva": {
+      const reserva = await consultarReserva(request.body);
+      return response.json({ reserva: reserva });
+    }
+
     default: {
       return response.json({ data: [] });
     }
@@ -327,4 +342,69 @@ const realizarReserva = async (ownerId, requestBody) => {
   const reserva = await createReserva(reservaModel);
 
   return reserva.id;
+};
+
+const recuperarCodigo = async ({ email }) => {
+  const alugueis = await admin
+    .firestore()
+    .collection("alugueis")
+    .get();
+
+  const alugueisProEmail = fromSnapshotToArray(alugueis);
+  const codigos = alugueisProEmail
+    .filter(aluguel => aluguel.pessoa.email === email)
+    .map(aluguel => aluguel.id);
+
+  mail.sendMail({
+    from: "eclesiomelo.1@gmail.com", // sender address
+    to: email, // list of receivers
+    subject: "Recuperacao de Códigos de Reservas EasyCar", // Subject line
+    text: codigos.join(", "), // plain text body
+    html: `<b>${codigos.join(", ")}</b>` // html body
+  });
+
+  return codigos;
+};
+
+const consultarReserva = async ({ reserva }) => {
+  const aluguel = await admin
+    .firestore()
+    .collection("alugueis")
+    .doc(reserva)
+    .get();
+
+  if (!aluguel.exists) {
+    return null;
+  }
+
+  const aluguelModel = aluguel.data();
+  const aluguelCarro = aluguelModel.carro;
+
+  const carro = await admin
+    .firestore()
+    .collection("cars")
+    .doc(aluguelCarro)
+    .get();
+
+  return {
+    ...aluguelModel,
+
+    checkin: moment(
+      new admin.firestore.Timestamp(
+        aluguelModel.checkin._seconds,
+        aluguelModel.checkin._nanoseconds
+      ).toDate()
+    ).format("DD/MM/YYYY"),
+
+    checkout: aluguelModel.checkout
+      ? moment(
+          new admin.firestore.Timestamp(
+            aluguelModel.checkout._seconds,
+            aluguelModel.checkout._nanoseconds
+          ).toDate()
+        ).format("DD/MM/YYYY")
+      : "",
+
+    carro: carro.exists ? carro.data() : {}
+  };
 };
