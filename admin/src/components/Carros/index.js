@@ -14,10 +14,37 @@ import Container from "react-bootstrap/Container";
 import withFirebase from "../../firebase/withFirebase";
 import withMainContainer from "../../containers/withMainContainer";
 import withAuthentication from "../../containers/withAuthentication";
+import Joyride from "react-joyride";
 
 const limitString = text => {
   return text.length < 25 ? text : `${text.slice(0, 25)}...`;
 };
+
+const infoSteps = [
+  {
+    target: "#novoCarroButton",
+    content: "Você pode cadastrar novos automóveis por aqui"
+  },
+  {
+    target: "#carroDisponível",
+    content:
+      "Quando marcado o carro estará disponível para reserva, quando é efetuado esté campo será desmarcado automaticamente, quando uma locação é finalizada este campo é marcado automaticamente"
+  },
+  {
+    target: "#editarCarro",
+    content: "Você pode editar as informações do veículo por aqui"
+  },
+  {
+    target: "#carroImagens",
+    content:
+      "Você pode incluir e remover imagens do seu veículo por aqui, no máximo 4 imagens por automóvel"
+  },
+  {
+    target: "#excluirCarro",
+    content:
+      "Você pode remover seu automóvel por aqui, uma vez excluído a operação não poderá ser desfeita, porém as locações vinculadas a este veículo não se perderão"
+  }
+];
 
 const Carro = props => {
   const { carro, onRemove, handleCheckChange } = props;
@@ -33,7 +60,7 @@ const Carro = props => {
           <Card.Title>{carro.modelo}</Card.Title>
           <Card.Text>{limitString(carro.observacao)}</Card.Text>
 
-          <Form.Group controlId="formBasicCheckbox">
+          <Form.Group controlId="formBasicCheckbox" id="carroDisponível">
             <Form.Check
               checked={carro.disponivel}
               type="checkbox"
@@ -62,6 +89,7 @@ const Carro = props => {
             >
               <Button
                 as={Link}
+                id="editarCarro"
                 to={`/carros/form/${carro.id}`}
                 variant="primary"
                 size="sm"
@@ -81,6 +109,7 @@ const Carro = props => {
             >
               <Button
                 as={Link}
+                id="carroImagens"
                 to={`/carros/images/form/${carro.id}`}
                 variant="secondary"
                 size="sm"
@@ -108,7 +137,7 @@ const Carro = props => {
                 </Popover>
               }
             >
-              <Button variant="danger" size="sm">
+              <Button id="excluirCarro" variant="danger" size="sm">
                 <i className="fas fa-trash-alt" />
               </Button>
             </OverlayTrigger>
@@ -149,7 +178,12 @@ const Carros = props => {
       <Row>
         <Col>
           <Card body>
-            <Button as={Link} to="/carros/form" variant="success">
+            <Button
+              id="novoCarroButton"
+              as={Link}
+              to="/carros/form"
+              variant="success"
+            >
               Novo Carro
             </Button>
           </Card>
@@ -166,6 +200,8 @@ const Carros = props => {
             handleCheckChange={state => handleDisponivel(state, carro.id)}
           />
         ))}
+
+        <Joyride steps={infoSteps} />
       </Row>
     </Container>
   );

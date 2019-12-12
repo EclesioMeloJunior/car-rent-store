@@ -251,7 +251,7 @@ const buscarCarros = async (ownerId, { marca, modelo }) => {
     })
 
     .map(carro => {
-      const carDescription = `Ano: ${carro.ano} \n Placa: ${carro.placa} \n Km: ${carro.km_atual}`;
+      const carDescription = `Ano: ${carro.ano}\nPlaca: ${carro.placa}\nKm: ${carro.km_atual}`;
 
       return {
         id: carro.id,
@@ -260,7 +260,8 @@ const buscarCarros = async (ownerId, { marca, modelo }) => {
         source: carro.images[0].src,
         description: carDescription,
         modelo: carro.modelo,
-        marca: carro.marca
+        marca: carro.marca,
+        valor: carro.valorHora
       };
     });
 };
